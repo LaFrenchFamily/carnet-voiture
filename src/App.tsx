@@ -4,6 +4,8 @@ import { Layout } from '@/components/Layout'
 import { AuthProvider } from '@/features/auth/AuthProvider'
 import { LoginPage } from '@/features/auth/LoginPage'
 import { RedirectIfSignedIn, RequireAuth } from '@/features/auth/RequireAuth'
+import { DashboardPage } from '@/features/dashboard/DashboardPage'
+import { ArchivedVehiclesPage } from '@/features/vehicles/ArchivedVehiclesPage'
 import { DocumentsTab } from '@/features/documents/DocumentsTab'
 import { EntryPage } from '@/features/entries/EntryPage'
 import { JournalTab } from '@/features/entries/JournalTab'
@@ -24,7 +26,8 @@ const router = createBrowserRouter([
       {
         element: <Layout />,
         children: [
-          { index: true, element: <p className="text-slate-600">Bienvenue !</p> },
+          { index: true, element: <DashboardPage /> },
+          { path: 'voitures/archivees', element: <ArchivedVehiclesPage /> },
           { path: 'voitures/nouvelle', element: <NewVehiclePage /> },
           {
             path: 'voitures/:vehicleId',
