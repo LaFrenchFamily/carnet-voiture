@@ -21,7 +21,6 @@ jobs:
 
   db:
     runs-on: ubuntu-latest
-    if: hashFiles('supabase/config.toml') != ''
     steps:
       - uses: actions/checkout@v4
       - uses: supabase/setup-cli@v1
