@@ -5,6 +5,10 @@ Appli web installable (PWA) pour tenir le carnet de ses voitures : entretiens, p
 - Conception : [`docs/superpowers/specs/2026-10-22-carnet-voiture-design.md`](docs/superpowers/specs/2026-10-22-carnet-voiture-design.md)
 - Plan : [`docs/superpowers/plans/2026-10-22-carnet-voiture-v1.md`](docs/superpowers/plans/2026-10-22-carnet-voiture-v1.md)
 
+## Mise en ligne
+
+Voir le guide pas à pas : [`docs/mise-en-place.md`](docs/mise-en-place.md).
+
 ## Développement local
 
 ```bash

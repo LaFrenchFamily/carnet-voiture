@@ -30,7 +30,7 @@ export function VehiclePage() {
             key={path}
             to={path}
             className={({ isActive }) =>
-              `whitespace-nowrap rounded-full px-4 py-2 text-sm font-medium ${isActive ? 'bg-blue-800 text-white' : 'bg-white text-slate-700 ring-1 ring-slate-200'}`
+              `whitespace-nowrap rounded-full px-3 py-2 text-sm font-medium ${isActive ? 'bg-blue-800 text-white' : 'bg-white text-slate-700 ring-1 ring-slate-200'}`
             }
           >
             {label}

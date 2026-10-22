@@ -10,9 +10,10 @@ export function VehicleHeader({ vehicle, km }: { vehicle: Vehicle; km?: number }
       <VehiclePhoto url={photo} />
       <div className="min-w-0">
         <h1 className="truncate text-xl font-semibold">{vehicle.nickname}</h1>
-        <p className="truncate text-sm text-slate-600">
-          {[details, vehicle.plate, formatKm(km ?? vehicle.initialOdometer)].filter(Boolean).join(' · ')}
-        </p>
+        {(details || vehicle.plate) && (
+          <p className="truncate text-sm text-slate-600">{[details, vehicle.plate].filter(Boolean).join(' · ')}</p>
+        )}
+        <p className="text-sm font-medium text-slate-800">{formatKm(km ?? vehicle.initialOdometer)}</p>
         {vehicle.archivedAt && <p className="text-xs font-medium text-amber-700">Archivée</p>}
       </div>
     </div>

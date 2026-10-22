@@ -1,6 +1,7 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { createBrowserRouter, Navigate, RouterProvider } from 'react-router'
 import { Layout } from '@/components/Layout'
+import { AccountPage } from '@/features/auth/AccountPage'
 import { AuthProvider } from '@/features/auth/AuthProvider'
 import { LoginPage } from '@/features/auth/LoginPage'
 import { RedirectIfSignedIn, RequireAuth } from '@/features/auth/RequireAuth'
@@ -29,6 +30,7 @@ const router = createBrowserRouter([
         children: [
           { index: true, element: <DashboardPage /> },
           { path: 'voitures/archivees', element: <ArchivedVehiclesPage /> },
+          { path: 'compte', element: <AccountPage /> },
           { path: 'voitures/nouvelle', element: <NewVehiclePage /> },
           {
             path: 'voitures/:vehicleId',

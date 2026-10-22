@@ -58,7 +58,7 @@ export function JournalTab() {
                       new Date(`${e.date}T00:00`).toLocaleDateString('fr-FR'),
                       e.odometer !== null ? formatKm(e.odometer) : null,
                       e.kind === 'fuel' && e.liters !== null ? `${e.liters.toLocaleString('fr-FR')} L` : null,
-                      e.kind !== 'fuel' ? categoryLabel(e.category) : null,
+                      e.kind !== 'fuel' && categoryLabel(e.category) !== e.title ? categoryLabel(e.category) : null,
                       e.garage,
                     ].filter(Boolean).join(' · ')}
                   </p>

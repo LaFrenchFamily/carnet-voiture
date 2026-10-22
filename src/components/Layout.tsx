@@ -9,9 +9,10 @@ export function Layout() {
     <div className="min-h-dvh pb-24">
       <header className="sticky top-0 z-10 border-b border-slate-200 bg-white/95 backdrop-blur">
         <div className="mx-auto flex max-w-3xl items-center justify-between gap-2 px-4 py-2">
-          <Link to="/" className="flex items-center gap-2 font-semibold text-blue-900">
-            <img src="/icons/icon-192.png" alt="" className="h-8 w-8" />
-            Carnet de Voiture
+          <Link to="/" aria-label="Carnet de Voiture" className="flex min-w-0 items-center gap-2 font-semibold text-blue-900">
+            <img src="/icons/icon-192.png" alt="" className="h-8 w-8 shrink-0" />
+            <span className="sm:hidden">Carnet</span>
+            <span className="hidden sm:inline">Carnet de Voiture</span>
           </Link>
           <nav className="flex gap-1">
             <NavLink to="/" end className={navClass}>Accueil</NavLink>

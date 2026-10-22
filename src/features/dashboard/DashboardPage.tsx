@@ -21,7 +21,8 @@ function VehicleCard({ vehicle, km, urgent }: { vehicle: Vehicle; km: number; ur
         <VehiclePhoto url={photo} />
         <div className="min-w-0 flex-1">
           <p className="truncate font-semibold">{vehicle.nickname}</p>
-          <p className="truncate text-sm text-slate-600">{[vehicle.plate, formatKm(km)].filter(Boolean).join(' · ')}</p>
+          {vehicle.plate && <p className="truncate text-sm text-slate-600">{vehicle.plate}</p>}
+          <p className="text-sm font-medium text-slate-800">{formatKm(km)}</p>
         </div>
         {urgent > 0 && (
           <span className="rounded-full bg-red-100 px-2 py-0.5 text-xs font-semibold text-red-800">

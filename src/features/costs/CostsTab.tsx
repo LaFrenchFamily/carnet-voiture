@@ -55,7 +55,7 @@ export function CostsView({ vehicle, entries }: { vehicle: Vehicle; entries: Ent
             {months.map((m) => (
               <div key={m.label} className="flex flex-1 flex-col items-center gap-1" title={`${m.label} : ${formatEuros(m.cents)}`}>
                 <div className="w-full rounded-t bg-blue-700" style={{ height: `${(m.cents / max) * 100}px` }} />
-                <span className="text-[10px] text-slate-500">{m.label.slice(0, 3)}</span>
+                <span className="text-[10px] text-slate-500">{m.label[0].toUpperCase()}</span>
               </div>
             ))}
           </div>
