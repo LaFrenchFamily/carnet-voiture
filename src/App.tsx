@@ -4,6 +4,7 @@ import { Layout } from '@/components/Layout'
 import { AuthProvider } from '@/features/auth/AuthProvider'
 import { LoginPage } from '@/features/auth/LoginPage'
 import { RedirectIfSignedIn, RequireAuth } from '@/features/auth/RequireAuth'
+import { CostsTab } from '@/features/costs/CostsTab'
 import { DashboardPage } from '@/features/dashboard/DashboardPage'
 import { ArchivedVehiclesPage } from '@/features/vehicles/ArchivedVehiclesPage'
 import { DocumentsTab } from '@/features/documents/DocumentsTab'
@@ -39,7 +40,7 @@ const router = createBrowserRouter([
               { path: 'entrees/:entryId', element: <EntryPage /> },
               { path: 'echeances', element: <RemindersTab /> },
               { path: 'factures', element: <DocumentsTab /> },
-              { path: 'couts', element: <p>Coûts</p> },
+              { path: 'couts', element: <CostsTab /> },
               { path: 'infos', element: <VehicleInfoTab /> },
             ],
           },
