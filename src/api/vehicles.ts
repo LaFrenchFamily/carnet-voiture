@@ -2,7 +2,8 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import type { Vehicle } from '@/domain/types'
 import { useUserId } from '@/features/auth/AuthProvider'
 import { removeFolder } from '@/lib/storage'
-import { supabase } from '@/lib/supabase'
+import { BUCKET, supabase } from '@/lib/supabase'
+import { uploadFile } from '@/lib/upload'
 import type { VehicleInput } from '@/features/vehicles/VehicleForm'
 import { fromVehicle, toVehicle } from './mappers'
 import { unwrap } from './unwrap'
@@ -64,5 +65,18 @@ export function useDeleteVehicle() {
       unwrap(await supabase.from('vehicles').delete().eq('id', id))
     },
     onSuccess: () => qc.invalidateQueries(),
+  })
+}
+
+export function useSetVehiclePhoto() {
+  const userId = useUserId()
+  const onSuccess = useInvalidateVehicles()
+  return useMutation({
+    mutationFn: async ({ vehicle, file }: { vehicle: Vehicle; file: File }) => {
+      const { storagePath } = await uploadFile(userId, vehicle.id, file)
+      unwrap(await supabase.from('vehicles').update({ photo_path: storagePath }).eq('id', vehicle.id))
+      if (vehicle.photoPath) await supabase.storage.from(BUCKET).remove([vehicle.photoPath])
+    },
+    onSuccess,
   })
 }

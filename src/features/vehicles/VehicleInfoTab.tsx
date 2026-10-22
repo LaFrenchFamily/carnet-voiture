@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { useNavigate } from 'react-router'
-import { useArchiveVehicle, useDeleteVehicle, useSaveVehicle } from '@/api/vehicles'
+import { useArchiveVehicle, useDeleteVehicle, useSaveVehicle, useSetVehiclePhoto } from '@/api/vehicles'
+import { DocumentPicker } from '@/features/documents/DocumentPicker'
 import { Button, Card, ErrorMessage } from '@/components/ui'
 import { useCurrentVehicle } from './VehiclePage'
 import { VehicleForm } from './VehicleForm'
@@ -10,6 +11,7 @@ export function VehicleInfoTab() {
   const save = useSaveVehicle()
   const archive = useArchiveVehicle()
   const remove = useDeleteVehicle()
+  const setPhoto = useSetVehiclePhoto()
   const navigate = useNavigate()
   const [saved, setSaved] = useState(false)
 
@@ -33,6 +35,10 @@ export function VehicleInfoTab() {
         />
         {saved && !save.isPending && <p className="mt-2 text-sm text-green-700">Modifications enregistrées.</p>}
         {save.error && <div className="mt-2"><ErrorMessage>Impossible d’enregistrer. Réessayez.</ErrorMessage></div>}
+      </Card>
+      <Card>
+        <h2 className="mb-2 font-semibold">Photo de la voiture</h2>
+        <DocumentPicker imagesOnly doneLabel="Photo mise à jour" upload={(file) => setPhoto.mutateAsync({ vehicle, file })} />
       </Card>
       <Card className="flex flex-col gap-3">
         <h2 className="font-semibold">Gérer</h2>

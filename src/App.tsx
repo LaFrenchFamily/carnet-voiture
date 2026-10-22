@@ -4,6 +4,7 @@ import { Layout } from '@/components/Layout'
 import { AuthProvider } from '@/features/auth/AuthProvider'
 import { LoginPage } from '@/features/auth/LoginPage'
 import { RedirectIfSignedIn, RequireAuth } from '@/features/auth/RequireAuth'
+import { DocumentsTab } from '@/features/documents/DocumentsTab'
 import { EntryPage } from '@/features/entries/EntryPage'
 import { JournalTab } from '@/features/entries/JournalTab'
 import { NewVehiclePage } from '@/features/vehicles/NewVehiclePage'
@@ -33,7 +34,7 @@ const router = createBrowserRouter([
               { path: 'entrees/nouvelle', element: <EntryPage /> },
               { path: 'entrees/:entryId', element: <EntryPage /> },
               { path: 'echeances', element: <p>Échéances</p> },
-              { path: 'factures', element: <p>Factures</p> },
+              { path: 'factures', element: <DocumentsTab /> },
               { path: 'couts', element: <p>Coûts</p> },
               { path: 'infos', element: <VehicleInfoTab /> },
             ],
