@@ -1,5 +1,5 @@
 import { differenceInCalendarDays, parseISO } from 'date-fns'
-import { addMonthsIso } from './format'
+import { addMonthsIso, formatKm } from './format'
 import type { Reminder, ReminderType } from './types'
 
 export type ReminderStatus = 'overdue' | 'soon' | 'upcoming' | 'done'
@@ -63,4 +63,20 @@ export function sortByUrgency<T extends { status: ReminderStatus; dueDate: strin
       (a.dueDate ?? '9999').localeCompare(b.dueDate ?? '9999') ||
       (a.kmLeft ?? Number.MAX_SAFE_INTEGER) - (b.kmLeft ?? Number.MAX_SAFE_INTEGER),
   )
+}
+
+const plural = (n: number, word: string) => `${n} ${word}${n > 1 ? 's' : ''}`
+
+/** Human-readable time and distance left, e.g. "dans 10 jours · dans 1 500 km". */
+export function describeDue(r: Reminder, currentKm: number, today: string): string {
+  const parts: string[] = []
+  if (r.dueDate) {
+    const days = differenceInCalendarDays(parseISO(r.dueDate), parseISO(today))
+    parts.push(days === 0 ? 'aujourd’hui' : days > 0 ? `dans ${plural(days, 'jour')}` : `dépassée de ${plural(-days, 'jour')}`)
+  }
+  if (r.dueOdometer !== null) {
+    const left = r.dueOdometer - currentKm
+    parts.push(left > 0 ? `dans ${formatKm(left)}` : `dépassée de ${formatKm(-left)}`)
+  }
+  return parts.join(' · ')
 }

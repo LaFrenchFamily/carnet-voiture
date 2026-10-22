@@ -1,5 +1,5 @@
 import { makeReminder } from '@/test/factories'
-import { nextReminder, reminderStatus, sortByUrgency } from './reminders'
+import { describeDue, nextReminder, reminderStatus, sortByUrgency } from './reminders'
 
 const today = '2026-10-22'
 const km = 50000
@@ -57,4 +57,15 @@ test('sortByUrgency orders by status, then date, then km left', () => {
     { name: 'overdue', status: 'overdue' as const, dueDate: '2026-01-01', kmLeft: null },
   ]
   expect(sortByUrgency(items).map((i) => i.name)).toEqual(['overdue', 'soon-early', 'soon-late', 'soon-km', 'upcoming'])
+})
+
+describe('describeDue', () => {
+  const norm = (s: string) => s.replace(/\s/g, ' ')
+  test('days and km left', () => {
+    expect(norm(describeDue(makeReminder({ dueDate: '2026-11-01', dueOdometer: 51500 }), km, today))).toBe('dans 10 jours · dans 1 500 km')
+  })
+  test('today and overdue', () => {
+    expect(describeDue(makeReminder({ dueDate: '2026-10-22' }), km, today)).toBe('aujourd’hui')
+    expect(norm(describeDue(makeReminder({ dueDate: '2026-10-21', dueOdometer: 49000 }), km, today))).toBe('dépassée de 1 jour · dépassée de 1 000 km')
+  })
 })

@@ -7,6 +7,7 @@ import { RedirectIfSignedIn, RequireAuth } from '@/features/auth/RequireAuth'
 import { DocumentsTab } from '@/features/documents/DocumentsTab'
 import { EntryPage } from '@/features/entries/EntryPage'
 import { JournalTab } from '@/features/entries/JournalTab'
+import { RemindersTab } from '@/features/reminders/RemindersTab'
 import { NewVehiclePage } from '@/features/vehicles/NewVehiclePage'
 import { VehicleInfoTab } from '@/features/vehicles/VehicleInfoTab'
 import { VehiclePage } from '@/features/vehicles/VehiclePage'
@@ -33,7 +34,7 @@ const router = createBrowserRouter([
               { path: 'journal', element: <JournalTab /> },
               { path: 'entrees/nouvelle', element: <EntryPage /> },
               { path: 'entrees/:entryId', element: <EntryPage /> },
-              { path: 'echeances', element: <p>Échéances</p> },
+              { path: 'echeances', element: <RemindersTab /> },
               { path: 'factures', element: <DocumentsTab /> },
               { path: 'couts', element: <p>Coûts</p> },
               { path: 'infos', element: <VehicleInfoTab /> },
