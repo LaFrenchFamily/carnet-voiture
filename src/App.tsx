@@ -4,6 +4,8 @@ import { Layout } from '@/components/Layout'
 import { AuthProvider } from '@/features/auth/AuthProvider'
 import { LoginPage } from '@/features/auth/LoginPage'
 import { RedirectIfSignedIn, RequireAuth } from '@/features/auth/RequireAuth'
+import { EntryPage } from '@/features/entries/EntryPage'
+import { JournalTab } from '@/features/entries/JournalTab'
 import { NewVehiclePage } from '@/features/vehicles/NewVehiclePage'
 import { VehicleInfoTab } from '@/features/vehicles/VehicleInfoTab'
 import { VehiclePage } from '@/features/vehicles/VehiclePage'
@@ -27,7 +29,9 @@ const router = createBrowserRouter([
             element: <VehiclePage />,
             children: [
               { index: true, element: <Navigate to="journal" replace /> },
-              { path: 'journal', element: <p>Journal</p> },
+              { path: 'journal', element: <JournalTab /> },
+              { path: 'entrees/nouvelle', element: <EntryPage /> },
+              { path: 'entrees/:entryId', element: <EntryPage /> },
               { path: 'echeances', element: <p>Échéances</p> },
               { path: 'factures', element: <p>Factures</p> },
               { path: 'couts', element: <p>Coûts</p> },
