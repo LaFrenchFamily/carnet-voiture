@@ -1,4 +1,5 @@
-import { createContext, useContext, useEffect, useState, type ReactNode } from 'react'
+import { createContext, useContext, useEffect, useRef, useState, type ReactNode } from 'react'
+import { useQueryClient } from '@tanstack/react-query'
 import type { Session, User } from '@supabase/supabase-js'
 import { supabase } from '@/lib/supabase'
 
@@ -14,15 +15,25 @@ const AuthContext = createContext<AuthState | null>(null)
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [session, setSession] = useState<Session | null>(null)
   const [loading, setLoading] = useState(true)
+  const queryClient = useQueryClient()
+  const userId = useRef<string | null>(null)
 
   useEffect(() => {
+    // Query keys are not scoped by user: drop the cache whenever the user changes,
+    // so the next person on a shared phone never sees the previous one's data.
+    function apply(next: Session | null) {
+      const nextId = next?.user.id ?? null
+      if (nextId !== userId.current) queryClient.clear()
+      userId.current = nextId
+      setSession(next)
+    }
     supabase.auth.getSession().then(({ data }) => {
-      setSession(data.session)
+      apply(data.session)
       setLoading(false)
     })
-    const { data } = supabase.auth.onAuthStateChange((_event, next) => setSession(next))
+    const { data } = supabase.auth.onAuthStateChange((_event, next) => apply(next))
     return () => data.subscription.unsubscribe()
-  }, [])
+  }, [queryClient])
 
   const value: AuthState = {
     session,

@@ -4,7 +4,7 @@ import { useAllOdometers } from '@/api/entries'
 import { useReminders } from '@/api/reminders'
 import { useVehicles } from '@/api/vehicles'
 import { QuickAddButton } from '@/components/QuickAddButton'
-import { Card, Spinner } from '@/components/ui'
+import { Card, ErrorMessage, Spinner } from '@/components/ui'
 import { formatKm, todayLocal } from '@/domain/format'
 import { currentOdometer } from '@/domain/odometer'
 import { describeDue } from '@/domain/reminders'
@@ -36,7 +36,7 @@ function VehicleCard({ vehicle, km, urgent }: { vehicle: Vehicle; km: number; ur
 
 export function DashboardPage() {
   const { data: vehicles, isLoading } = useVehicles()
-  const { data: reminders } = useReminders()
+  const { data: reminders, isLoading: remindersLoading, error: remindersError } = useReminders()
   const { data: odometerRows } = useAllOdometers()
 
   if (isLoading || !vehicles) return <Spinner />
@@ -60,7 +60,11 @@ export function DashboardPage() {
     <div className="flex flex-col gap-6">
       <section className="flex flex-col gap-2">
         <h2 className="text-lg font-semibold">Échéances</h2>
-        {urgent.length === 0 ? (
+        {remindersError ? (
+          <ErrorMessage>Impossible de charger les échéances. Vérifiez votre connexion.</ErrorMessage>
+        ) : remindersLoading || !reminders ? (
+          <Spinner />
+        ) : urgent.length === 0 ? (
           <p className="rounded-xl bg-green-50 px-4 py-3 text-sm text-green-800">Rien d’urgent. Tout est à jour 👍</p>
         ) : (
           <ul className="flex flex-col gap-2">

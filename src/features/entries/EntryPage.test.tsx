@@ -11,7 +11,7 @@ const mocks = vi.hoisted(() => ({
 vi.mock('@/features/vehicles/VehiclePage', () => ({ useCurrentVehicle: () => makeVehicle({ id: 'v1' }) }))
 vi.mock('@/api/entries', () => ({
   useEntries: () => ({ data: [], isLoading: false }),
-  useSaveEntry: () => ({ mutate: mocks.save, isPending: false, error: null }),
+  useSaveEntry: () => ({ mutateAsync: mocks.save, isPending: false, error: null }),
   useDeleteEntry: () => ({ mutate: vi.fn(), isPending: false }),
 }))
 vi.mock('@/api/documents', () => ({
@@ -32,7 +32,7 @@ function renderNewFuel() {
 }
 
 beforeEach(() => {
-  mocks.save.mockImplementation((_values, { onSuccess }) => onSuccess(makeEntry({ id: 'e1', vehicleId: 'v1' })))
+  mocks.save.mockResolvedValue(makeEntry({ id: 'e1', vehicleId: 'v1' }))
 })
 
 test('invoices attached to a new entry are uploaded after saving it', async () => {
@@ -57,4 +57,14 @@ test('a failed upload keeps the saved entry and offers a retry', async () => {
   await user.click(screen.getByRole('button', { name: 'Réessayer' }))
   expect(mocks.addDocument).toHaveBeenCalledTimes(2)
   expect(await screen.findByText('Journal affiché')).toBeInTheDocument()
+})
+
+test('the save button stays disabled while invoices upload', async () => {
+  mocks.addDocument.mockReturnValue(new Promise(() => {}))
+  const user = renderNewFuel()
+  await user.type(screen.getByLabelText('Litres'), '40')
+  await user.upload(screen.getByLabelText('Choisir un fichier'), new File(['%PDF'], 'ticket.pdf', { type: 'application/pdf' }))
+  await user.click(screen.getByRole('button', { name: 'Enregistrer' }))
+  expect(await screen.findByText('Envoi des factures…')).toBeInTheDocument()
+  expect(screen.getByRole('button', { name: 'Enregistrer' })).toBeDisabled()
 })

@@ -44,3 +44,13 @@ test('breaks down the year by kind with percentages', () => {
     'Autre dépense0,00 € · 0 %',
   ])
 })
+
+test('lists the amount of each month with spending, readable without hovering', () => {
+  render(<CostsView vehicle={makeVehicle()} entries={entries} />)
+  const months = screen.getByRole('list', { name: 'Dépenses par mois' })
+  expect(within(months).getAllByRole('listitem').map((li) => norm(li.textContent))).toEqual([
+    'janvier60,00 €',
+    'février50,00 €',
+    'mars90,00 €',
+  ])
+})

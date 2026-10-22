@@ -23,6 +23,7 @@ export function EntryPage() {
   const [pending, setPending] = useState<File[]>([])
   const [failed, setFailed] = useState<{ entryId: string; files: File[] } | null>(null)
   const [retrying, setRetrying] = useState(false)
+  const [uploading, setUploading] = useState(false)
 
   if (isLoading || !entries) return <Spinner />
   const initial = entryId ? entries.find((e) => e.id === entryId) : undefined
@@ -44,17 +45,19 @@ export function EntryPage() {
     return failures
   }
 
-  function submit(values: EntryInput) {
-    save.mutate(
-      { ...values, id: initial?.id, vehicleId: vehicle.id },
-      {
-        onSuccess: async (entry) => {
-          const failures = await uploadAll(entry.id, pending)
-          if (failures.length === 0) back()
-          else setFailed({ entryId: entry.id, files: failures })
-        },
-      },
-    )
+  async function submit(values: EntryInput) {
+    let entry
+    try {
+      entry = await save.mutateAsync({ ...values, id: initial?.id, vehicleId: vehicle.id })
+    } catch {
+      return // save.error is shown below the form
+    }
+    // Keep the form locked until navigation, or a second tap would create a duplicate entry.
+    setUploading(true)
+    const failures = await uploadAll(entry.id, pending)
+    setUploading(false)
+    if (failures.length === 0) back()
+    else setFailed({ entryId: entry.id, files: failures })
   }
 
   async function retry() {
@@ -84,9 +87,10 @@ export function EntryPage() {
     <div className="flex flex-col gap-3">
       <Card>
         <h2 className="mb-3 font-semibold">{initial ? 'Modifier' : `Nouveau : ${KIND_ADD_LABELS[kind].toLowerCase()}`}</h2>
-        <EntryForm key={initial?.id ?? kind} vehicle={vehicle} entries={entries} kind={kind} initial={initial} submitting={save.isPending} onSubmit={submit}>
+        <EntryForm key={initial?.id ?? kind} vehicle={vehicle} entries={entries} kind={kind} initial={initial} submitting={save.isPending || uploading} onSubmit={submit}>
           {!initial && <PendingFiles files={pending} onChange={setPending} />}
         </EntryForm>
+        {uploading && <p className="mt-3 text-sm text-slate-600">Envoi des factures…</p>}
         {save.error && <div className="mt-3"><ErrorMessage>Impossible d’enregistrer. Réessayez.</ErrorMessage></div>}
       </Card>
       {initial && (

@@ -7,7 +7,7 @@ import { formatEuros } from '@/domain/format'
 import type { Entry, EntryKind, Vehicle } from '@/domain/types'
 import { useCurrentVehicle } from '@/features/vehicles/VehiclePage'
 
-const MONTHS = ['janv.', 'févr.', 'mars', 'avr.', 'mai', 'juin', 'juil.', 'août', 'sept.', 'oct.', 'nov.', 'déc.']
+const MONTHS = ['janvier', 'février', 'mars', 'avril', 'mai', 'juin', 'juillet', 'août', 'septembre', 'octobre', 'novembre', 'décembre']
 const KINDS: EntryKind[] = ['maintenance', 'repair', 'fuel', 'other']
 const lPer100 = new Intl.NumberFormat('fr-FR', { minimumFractionDigits: 1, maximumFractionDigits: 1 })
 
@@ -59,6 +59,15 @@ export function CostsView({ vehicle, entries }: { vehicle: Vehicle; entries: Ent
               </div>
             ))}
           </div>
+
+          <ul aria-label="Dépenses par mois" className="flex flex-col gap-1 border-b border-slate-100 pb-3 text-sm">
+            {months.filter((m) => m.cents > 0).map((m) => (
+              <li key={m.label} className="flex justify-between">
+                <span className="capitalize">{m.label}</span>
+                <span className="font-medium">{formatEuros(m.cents)}</span>
+              </li>
+            ))}
+          </ul>
 
           <ul aria-label="Répartition par type" className="flex flex-col gap-1 text-sm">
             {KINDS.map((k) => (
