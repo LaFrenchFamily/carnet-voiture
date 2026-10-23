@@ -27,3 +27,4 @@ dist-ssr
 .env.local
 supabase/.temp/
 supabase/.branches/
+public/ocr/

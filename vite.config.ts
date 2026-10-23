@@ -12,6 +12,13 @@ export default defineConfig({
     VitePWA({
       registerType: 'autoUpdate',
       includeAssets: ['favicon.svg'],
+      workbox: {
+        // The OCR engine (~5 MB) is cached on first use, not downloaded at install.
+        globIgnores: ['ocr/**'],
+        runtimeCaching: [
+          { urlPattern: ({ url }) => url.pathname.startsWith('/ocr/'), handler: 'CacheFirst', options: { cacheName: 'ocr' } },
+        ],
+      },
       manifest: {
         name: 'Carnet de Voiture',
         short_name: 'Carnet',

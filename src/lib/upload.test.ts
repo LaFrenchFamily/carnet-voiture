@@ -1,4 +1,4 @@
-import { MAX_BYTES, prepareUpload } from './upload'
+import { MAX_BYTES, prepareUpload, rejectReason } from './upload'
 
 function file(name: string, type: string, bytes: number): File {
   const f = new File(['x'], name, { type })
@@ -48,3 +48,16 @@ test('a HEIC without MIME type is recognised by its extension', async () => {
 })
 
 test('MAX_BYTES is 10 MB', () => expect(MAX_BYTES).toBe(10 * 1024 * 1024))
+
+test('rejectReason refuses unsupported formats', () => {
+  expect(rejectReason(file('notes.txt', 'text/plain', 10))).toBe('Format non pris en charge (PDF, JPEG, PNG, HEIC, WebP)')
+})
+
+test('rejectReason refuses a PDF over 10 MB', () => {
+  expect(rejectReason(file('f.pdf', 'application/pdf', 11 * 1024 * 1024))).toBe('Fichier trop lourd (10 Mo maximum)')
+})
+
+test('rejectReason accepts a small PDF and a large photo, which gets resized', () => {
+  expect(rejectReason(file('f.pdf', 'application/pdf', 1024 * 1024))).toBeNull()
+  expect(rejectReason(file('p.jpg', 'image/jpeg', 12 * 1024 * 1024))).toBeNull()
+})
