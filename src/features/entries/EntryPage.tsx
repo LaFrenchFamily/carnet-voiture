@@ -9,7 +9,7 @@ import { DocumentPicker } from '@/features/documents/DocumentPicker'
 import { PendingFiles } from '@/features/documents/PendingFiles'
 import { useCurrentVehicle } from '@/features/vehicles/VehiclePage'
 import { EntryForm, type EntryInput } from './EntryForm'
-import { isEntryKind, KIND_ADD_LABELS } from './kinds'
+import { ENTRY_KINDS, isEntryKind, KIND_ADD_LABELS } from './kinds'
 
 /** Navigation state left by the invoice scan screen. Absent after a reload. */
 export type ScanState = { scan: { guess: InvoiceGuess; file: File } }
@@ -102,6 +102,21 @@ export function EntryPage() {
             ? 'Vérifiez les champs surlignés'
             : 'Aucune information lue, complétez le formulaire'}
         </p>
+      )}
+      {scan && (
+        <div className="grid grid-cols-4 gap-1" role="group" aria-label="Type d’entrée">
+          {ENTRY_KINDS.map((k) => (
+            <button
+              key={k}
+              type="button"
+              aria-pressed={k === kind}
+              onClick={() => navigate(`?type=${k}`, { replace: true, state: location.state })}
+              className={`min-h-11 rounded-lg px-2 text-sm font-medium ${k === kind ? 'bg-blue-800 text-white' : 'bg-white text-blue-800 ring-1 ring-slate-200'}`}
+            >
+              {KIND_ADD_LABELS[k]}
+            </button>
+          ))}
+        </div>
       )}
       <Card>
         <h2 className="mb-3 font-semibold">{initial ? 'Modifier' : `Nouveau : ${KIND_ADD_LABELS[kind].toLowerCase()}`}</h2>

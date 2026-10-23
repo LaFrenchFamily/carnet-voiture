@@ -17,6 +17,8 @@ export default defineConfig({
         globIgnores: ['ocr/**'],
         runtimeCaching: [
           { urlPattern: ({ url }) => url.pathname.startsWith('/ocr/'), handler: 'CacheFirst', options: { cacheName: 'ocr' } },
+          // pdf.js worker (.mjs, outside the precache): cached on first PDF read so PDFs are read offline afterwards.
+          { urlPattern: ({ url }) => /\/pdf\.worker[^/]*\.mjs$/.test(url.pathname), handler: 'CacheFirst', options: { cacheName: 'pdf-worker' } },
         ],
       },
       manifest: {

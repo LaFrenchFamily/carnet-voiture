@@ -33,8 +33,10 @@ export const LITERS_RE = /(?<![\d.,])(\d+(?:[,.]\d+)?) ?(?:l|litres?)\b/
 export const LITERS_HINT_RE = /\b(volume|quantite)\b/
 export const DECIMAL_RE = /(?<![\d.,])(\d+(?:[,.]\d+)?)(?![\d])/
 
+/** A fuel filter is a garage part, not a fill-up. */
+export const FUEL_FILTER_RE = /\bfiltres? (?:a |de )?(?:gazole|gasoil|carburant)\b/g
 export const FUEL_WORDS = /\b(carburant|gazole|gasoil|sp ?95|sp ?98|e10|e85|super|station)\b/
-/** Words that clearly mean servicing; they win over repair words ("remplacement filtre"). */
+/** Words that clearly mean servicing; they win over fuel words ("huile … super") and repair words ("remplacement filtre"). */
 export const MAINTENANCE_WORDS = /\b(vidange|revision|entretien|controle technique)\b/
 export const REPAIR_WORDS = /\b(reparation|remplacement|diagnostic|carrosserie|sinistre)\b/
 export const WEAK_MAINTENANCE_WORDS = /\bfiltres?\b/

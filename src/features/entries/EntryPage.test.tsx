@@ -104,3 +104,15 @@ test('without a scan (e.g. after a reload) the form is plain', () => {
   expect(screen.queryByText('Aucune information lue, complétez le formulaire')).not.toBeInTheDocument()
   expect(screen.queryByText('À vérifier')).not.toBeInTheDocument()
 })
+
+test('after a scan the guessed type can be changed, keeping the file and the guesses', async () => {
+  const scan = new File(['%PDF'], 'facture.pdf', { type: 'application/pdf' })
+  const user = renderScanned(scan, 'Norauto')
+  expect(screen.getByLabelText('Garage')).toHaveValue('Norauto')
+  await user.click(screen.getByRole('button', { name: 'Réparation' }))
+  expect(screen.getByText('Nouveau : réparation')).toBeInTheDocument()
+  expect(screen.getByLabelText('Garage')).toHaveValue('Norauto')
+  expect(screen.getByText('facture.pdf')).toBeInTheDocument()
+  await user.click(screen.getByRole('button', { name: 'Plein' }))
+  expect(screen.getByLabelText('Litres')).toBeInTheDocument()
+})

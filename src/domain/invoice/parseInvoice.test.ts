@@ -125,3 +125,17 @@ test('odometer after its keyword wins over a model number before it', () => {
 test('odometer written before "km"', () => {
   expect(parseInvoice('Relevé 54 300 km', TODAY).odometer).toBe(54300)
 })
+
+test('a fuel filter on a service invoice does not make it a fuel entry', () => {
+  const guess = parseInvoice('Garage Martin\nRévision\nFiltre à gazole 32,00\nHuile 5W30 5 L\nTotal TTC 180,00', TODAY)
+  expect(guess.kind).toBe('maintenance')
+  expect(guess.liters).toBeNull()
+})
+
+test('an oil brand named "Super" on an oil change is not fuel', () => {
+  expect(parseInvoice('Vidange\nHuile Elf Evolution Super 5 L\nTotal TTC 89,00', TODAY).kind).toBe('maintenance')
+})
+
+test('a lone fuel-filter repair is not fuel either', () => {
+  expect(parseInvoice('Garage Martin\nRemplacement filtre à carburant\nTotal TTC 60,00', TODAY).kind).toBe('repair')
+})

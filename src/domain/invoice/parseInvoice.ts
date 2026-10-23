@@ -1,7 +1,7 @@
 import type { Category } from '@/domain/categories'
 import type { EntryKind } from '@/domain/types'
 import {
-  AMOUNT_KEYWORDS, AMOUNT_RE, CATEGORY_WORDS, DATE_HINT_RE, DECIMAL_RE, FUEL_WORDS, INTEGER_RE, KNOWN_GARAGES,
+  AMOUNT_KEYWORDS, AMOUNT_RE, FUEL_FILTER_RE, CATEGORY_WORDS, DATE_HINT_RE, DECIMAL_RE, FUEL_WORDS, INTEGER_RE, KNOWN_GARAGES,
   LITERS_HINT_RE, LITERS_RE, MAINTENANCE_WORDS, MONTHS, normalize, NOT_GARAGE_RE, NUMERIC_DATE_RE, ODOMETER_LABEL_RE, ODOMETER_UNIT_RE,
   REPAIR_WORDS, WEAK_MAINTENANCE_WORDS, WORD_DATE_RE,
 } from './patterns'
@@ -123,8 +123,8 @@ function findGarage(text: string, rawLines: string[]): string | null {
 }
 
 function findKind(text: string, garage: string | null): EntryKind | null {
-  if (FUEL_WORDS.test(text)) return 'fuel'
   if (MAINTENANCE_WORDS.test(text)) return 'maintenance'
+  if (FUEL_WORDS.test(text.replace(FUEL_FILTER_RE, ' '))) return 'fuel'
   if (REPAIR_WORDS.test(text)) return 'repair'
   if (WEAK_MAINTENANCE_WORDS.test(text) || garage) return 'maintenance'
   return null
