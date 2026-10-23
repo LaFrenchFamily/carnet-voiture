@@ -9,6 +9,7 @@ import { CostsTab } from '@/features/costs/CostsTab'
 import { DashboardPage } from '@/features/dashboard/DashboardPage'
 import { ArchivedVehiclesPage } from '@/features/vehicles/ArchivedVehiclesPage'
 import { DocumentsTab } from '@/features/documents/DocumentsTab'
+import { ScanPage } from '@/features/scan/ScanPage'
 import { EntryPage } from '@/features/entries/EntryPage'
 import { JournalTab } from '@/features/entries/JournalTab'
 import { RemindersTab } from '@/features/reminders/RemindersTab'
@@ -39,6 +40,7 @@ const router = createBrowserRouter([
               { index: true, element: <Navigate to="journal" replace /> },
               { path: 'journal', element: <JournalTab /> },
               { path: 'entrees/nouvelle', element: <EntryPage /> },
+              { path: 'entrees/lire', element: <ScanPage /> },
               { path: 'entrees/:entryId', element: <EntryPage /> },
               { path: 'echeances', element: <RemindersTab /> },
               { path: 'factures', element: <DocumentsTab /> },
