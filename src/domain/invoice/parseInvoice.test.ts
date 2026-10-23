@@ -117,3 +117,11 @@ test('noisy OCR text does not throw', () => {
   const guess = parseInvoice('T0tal TTC : 89,9O €\n|||~~ ', TODAY)
   expect([null, 8990]).toContain(guess.amountCents)
 })
+
+test('odometer after its keyword wins over a model number before it', () => {
+  expect(parseInvoice('Véhicule : Peugeot 208 — Kilométrage : 87 412 km', TODAY).odometer).toBe(87412)
+})
+
+test('odometer written before "km"', () => {
+  expect(parseInvoice('Relevé 54 300 km', TODAY).odometer).toBe(54300)
+})

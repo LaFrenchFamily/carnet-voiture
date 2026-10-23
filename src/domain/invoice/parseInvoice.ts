@@ -2,7 +2,7 @@ import type { Category } from '@/domain/categories'
 import type { EntryKind } from '@/domain/types'
 import {
   AMOUNT_KEYWORDS, AMOUNT_RE, CATEGORY_WORDS, DATE_HINT_RE, DECIMAL_RE, FUEL_WORDS, INTEGER_RE, KNOWN_GARAGES,
-  LITERS_HINT_RE, LITERS_RE, MAINTENANCE_WORDS, MONTHS, normalize, NOT_GARAGE_RE, NUMERIC_DATE_RE, ODOMETER_HINT_RE,
+  LITERS_HINT_RE, LITERS_RE, MAINTENANCE_WORDS, MONTHS, normalize, NOT_GARAGE_RE, NUMERIC_DATE_RE, ODOMETER_LABEL_RE, ODOMETER_UNIT_RE,
   REPAIR_WORDS, WEAK_MAINTENANCE_WORDS, WORD_DATE_RE,
 } from './patterns'
 
@@ -80,17 +80,21 @@ function findDate(text: string, today: string): string | null {
   return candidates.map((c) => c.iso).sort().at(-1) ?? null
 }
 
-/** The whole number closest to "km", "kilometrage" or "compteur" on the same line. */
+/** The whole number right after "kilometrage"/"compteur" or right before "km", on the same line. */
 function findOdometer(lines: string[]): number | null {
   let best: { value: number; distance: number } | null = null
   for (const line of lines) {
-    const hint = ODOMETER_HINT_RE.exec(line)
-    if (!hint) continue
+    const labels = [...line.matchAll(ODOMETER_LABEL_RE)].map((m) => m.index + m[0].length)
+    const units = [...line.matchAll(ODOMETER_UNIT_RE)].map((m) => m.index)
+    if (labels.length === 0 && units.length === 0) continue
     for (const m of line.matchAll(INTEGER_RE)) {
       const digits = digitsOnly(m[1])
       const value = Number(digits)
       if (digits.length > 7 || value < 1 || value > 2_000_000) continue
-      const distance = Math.abs(m.index - hint.index)
+      const end = m.index + m[0].length
+      const distances = [...labels.map((l) => m.index - l), ...units.map((u) => u - end)].filter((d) => d >= 0)
+      if (distances.length === 0) continue
+      const distance = Math.min(...distances)
       if (!best || distance < best.distance) best = { value, distance }
     }
   }

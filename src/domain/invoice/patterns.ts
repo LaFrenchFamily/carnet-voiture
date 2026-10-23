@@ -22,7 +22,10 @@ export const MONTHS = ['janvier', 'fevrier', 'mars', 'avril', 'mai', 'juin', 'ju
 /** Words that, just before a date, mark it as the invoice date. */
 export const DATE_HINT_RE = /\b(date|facture|le)\b/
 
-export const ODOMETER_HINT_RE = /\bkms?\b|kilometrage|compteur/
+/** The mileage follows these words ("Kilométrage : 87 412")… */
+export const ODOMETER_LABEL_RE = /\b(kilometrage|compteur)\b/g
+/** …and precedes this unit ("87 412 km"). */
+export const ODOMETER_UNIT_RE = /\bkms?\b/g
 /** A whole number, with optional space or dot thousands separators, not part of a date or a decimal. */
 export const INTEGER_RE = /(?<![\d.,/])(\d{1,3}(?:[ .]\d{3})+|\d+)(?![\d,/]|\.\d)/g
 
