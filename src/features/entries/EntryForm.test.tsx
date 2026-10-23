@@ -3,6 +3,7 @@ import userEvent from '@testing-library/user-event'
 import { addMonthsIso, todayLocal } from '@/domain/format'
 import type { EntryKind } from '@/domain/types'
 import { makeEntry, makeVehicle } from '@/test/factories'
+import { EMPTY_GUESS } from '@/domain/invoice/parseInvoice'
 import { EntryForm } from './EntryForm'
 
 const vehicle = makeVehicle({ initialOdometer: 40000 })
@@ -68,4 +69,24 @@ test('a date more than one year ahead is refused', async () => {
   await user.click(screen.getByRole('button', { name: 'Enregistrer' }))
   expect(screen.getByText('Date trop lointaine (un an maximum)')).toBeInTheDocument()
   expect(onSubmit).not.toHaveBeenCalled()
+})
+
+test('a scanned invoice prefills fields and flags them for checking', async () => {
+  const prefill = { ...EMPTY_GUESS, date: '2026-10-03', amountCents: 7623, liters: 42.35 }
+  render(<EntryForm vehicle={vehicle} entries={entries} kind="fuel" prefill={prefill} onSubmit={vi.fn()} />)
+  expect(screen.getByLabelText('Date')).toHaveValue('2026-10-03')
+  expect(screen.getByLabelText('Montant (€)')).toHaveValue('76,23')
+  expect(screen.getByLabelText('Litres')).toHaveValue('42,35')
+  expect(screen.getAllByText('À vérifier')).toHaveLength(3)
+  await userEvent.setup().type(screen.getByLabelText('Montant (€)'), '0')
+  expect(screen.getAllByText('À vérifier')).toHaveLength(2)
+})
+
+test('a scanned garage and category prefill a maintenance entry', () => {
+  const prefill = { ...EMPTY_GUESS, garage: 'Norauto', category: 'brakes' as const, odometer: 60000 }
+  render(<EntryForm vehicle={vehicle} entries={entries} kind="maintenance" prefill={prefill} onSubmit={vi.fn()} />)
+  expect(screen.getByLabelText('Garage')).toHaveValue('Norauto')
+  expect(screen.getByLabelText('Catégorie')).toHaveValue('brakes')
+  expect(screen.getByLabelText('Kilométrage')).toHaveValue('60000')
+  expect(screen.getAllByText('À vérifier')).toHaveLength(3)
 })

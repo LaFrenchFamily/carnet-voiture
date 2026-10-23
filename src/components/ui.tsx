@@ -48,10 +48,10 @@ export function TextField({ label, error, hint, ...props }: FieldProps & InputHT
   )
 }
 
-export function SelectField({ label, error, children, ...props }: FieldProps & SelectHTMLAttributes<HTMLSelectElement>) {
+export function SelectField({ label, error, hint, children, ...props }: FieldProps & SelectHTMLAttributes<HTMLSelectElement>) {
   const id = useId()
   return (
-    <FieldShell id={id} label={label} error={error}>
+    <FieldShell id={id} label={label} error={error} hint={hint}>
       <select id={id} className={INPUT} {...props}>{children}</select>
     </FieldShell>
   )

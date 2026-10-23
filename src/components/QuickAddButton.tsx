@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router'
 import type { Vehicle } from '@/domain/types'
 
 const ACTIONS = [
+  ['📷', 'Lire une facture', 'entrees/lire'],
   ['⛽', 'Plein', 'entrees/nouvelle?type=fuel'],
   ['🔧', 'Entretien', 'entrees/nouvelle?type=maintenance'],
   ['📎', 'Facture', 'factures'],

@@ -2,6 +2,8 @@
 
 Appli web installable (PWA) pour tenir le carnet de ses voitures : entretiens, pleins, factures, échéances et coûts.
 
+Une facture prise en photo ou en PDF peut être lue directement dans le téléphone pour préremplir l’entrée (date, montant, kilométrage, garage) ; rien n’est envoyé à un service extérieur pour cette lecture.
+
 - Conception : [`docs/superpowers/specs/2026-10-22-carnet-voiture-design.md`](docs/superpowers/specs/2026-10-22-carnet-voiture-design.md)
 - Plan : [`docs/superpowers/plans/2026-10-22-carnet-voiture-v1.md`](docs/superpowers/plans/2026-10-22-carnet-voiture-v1.md)
 

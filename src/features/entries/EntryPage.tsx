@@ -1,26 +1,37 @@
 import { useState } from 'react'
-import { useNavigate, useParams, useSearchParams } from 'react-router'
+import { useLocation, useNavigate, useParams, useSearchParams } from 'react-router'
 import { useAddDocument, useDocuments } from '@/api/documents'
 import { useDeleteEntry, useEntries, useSaveEntry } from '@/api/entries'
 import { Button, Card, ErrorMessage, Spinner } from '@/components/ui'
+import type { InvoiceGuess } from '@/domain/invoice/parseInvoice'
 import { DocumentGrid } from '@/features/documents/DocumentGrid'
 import { DocumentPicker } from '@/features/documents/DocumentPicker'
 import { PendingFiles } from '@/features/documents/PendingFiles'
 import { useCurrentVehicle } from '@/features/vehicles/VehiclePage'
 import { EntryForm, type EntryInput } from './EntryForm'
-import { isEntryKind, KIND_ADD_LABELS } from './kinds'
+import { ENTRY_KINDS, isEntryKind, KIND_ADD_LABELS } from './kinds'
+
+/** Navigation state left by the invoice scan screen. Absent after a reload. */
+export type ScanState = { scan: { guess: InvoiceGuess; file: File } }
+
+function isScanState(state: unknown): state is ScanState {
+  const scan = (state as ScanState | null)?.scan
+  return typeof scan === 'object' && scan !== null && scan.file instanceof File && typeof scan.guess === 'object'
+}
 
 export function EntryPage() {
   const vehicle = useCurrentVehicle()
   const { entryId } = useParams()
   const [params] = useSearchParams()
   const navigate = useNavigate()
+  const location = useLocation()
+  const scan = !entryId && isScanState(location.state) ? location.state.scan : null
   const { data: entries, isLoading } = useEntries(vehicle.id)
   const { data: docs } = useDocuments(vehicle.id)
   const save = useSaveEntry()
   const remove = useDeleteEntry()
   const addDocument = useAddDocument()
-  const [pending, setPending] = useState<File[]>([])
+  const [pending, setPending] = useState<File[]>(() => (scan ? [scan.file] : []))
   const [failed, setFailed] = useState<{ entryId: string; files: File[] } | null>(null)
   const [retrying, setRetrying] = useState(false)
   const [uploading, setUploading] = useState(false)
@@ -85,9 +96,31 @@ export function EntryPage() {
 
   return (
     <div className="flex flex-col gap-3">
+      {scan && (
+        <p className="rounded-lg bg-amber-50 px-3 py-2 text-sm text-amber-800">
+          {Object.entries(scan.guess).some(([k, v]) => k !== 'kind' && v != null)
+            ? 'Vérifiez les champs surlignés'
+            : 'Aucune information lue, complétez le formulaire'}
+        </p>
+      )}
+      {scan && (
+        <div className="grid grid-cols-4 gap-1" role="group" aria-label="Type d’entrée">
+          {ENTRY_KINDS.map((k) => (
+            <button
+              key={k}
+              type="button"
+              aria-pressed={k === kind}
+              onClick={() => navigate(`?type=${k}`, { replace: true, state: location.state })}
+              className={`min-h-11 rounded-lg px-2 text-sm font-medium ${k === kind ? 'bg-blue-800 text-white' : 'bg-white text-blue-800 ring-1 ring-slate-200'}`}
+            >
+              {KIND_ADD_LABELS[k]}
+            </button>
+          ))}
+        </div>
+      )}
       <Card>
         <h2 className="mb-3 font-semibold">{initial ? 'Modifier' : `Nouveau : ${KIND_ADD_LABELS[kind].toLowerCase()}`}</h2>
-        <EntryForm key={initial?.id ?? kind} vehicle={vehicle} entries={entries} kind={kind} initial={initial} submitting={save.isPending || uploading} onSubmit={submit}>
+        <EntryForm key={initial?.id ?? kind} vehicle={vehicle} entries={entries} kind={kind} initial={initial} prefill={scan?.guess} submitting={save.isPending || uploading} onSubmit={submit}>
           {!initial && <PendingFiles files={pending} onChange={setPending} />}
         </EntryForm>
         {uploading && <p className="mt-3 text-sm text-slate-600">Envoi des factures…</p>}

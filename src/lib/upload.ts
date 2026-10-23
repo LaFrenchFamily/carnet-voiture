@@ -42,12 +42,21 @@ export async function defaultResize(file: File): Promise<Blob> {
   )
 }
 
+/** Why a file can never be attached (format, or size for a file that will not be resized), or null. */
+export function rejectReason(file: File): string | null {
+  const mimeType = mimeTypeOf(file)
+  if (!ACCEPTED_TYPES.includes(mimeType)) return UNSUPPORTED
+  if (!mimeType.startsWith('image/') && file.size > MAX_BYTES) return TOO_BIG
+  return null
+}
+
 export async function prepareUpload(
   file: File,
   resize: (f: File) => Promise<Blob> = defaultResize,
 ): Promise<Prepared | { error: string }> {
+  const reason = rejectReason(file)
+  if (reason) return { error: reason }
   const mimeType = mimeTypeOf(file)
-  if (!ACCEPTED_TYPES.includes(mimeType)) return { error: UNSUPPORTED }
 
   if (mimeType.startsWith('image/')) {
     try {

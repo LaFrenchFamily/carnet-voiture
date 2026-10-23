@@ -18,6 +18,9 @@ export function JournalTab() {
 
   return (
     <div className="flex flex-col gap-3">
+      <Link to="../entrees/lire" className="rounded-lg bg-blue-800 px-3 py-2 text-center text-sm font-medium text-white hover:bg-blue-900">
+        📷 Lire une facture
+      </Link>
       <div className="grid grid-cols-2 gap-2 sm:grid-cols-4">
         {ENTRY_KINDS.map((k) => (
           <Link key={k} to={`../entrees/nouvelle?type=${k}`} className="rounded-lg bg-white px-3 py-2 text-center text-sm font-medium text-blue-800 ring-1 ring-slate-200 hover:bg-blue-50">

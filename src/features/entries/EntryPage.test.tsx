@@ -2,6 +2,7 @@ import { render, screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { MemoryRouter, Route, Routes } from 'react-router'
 import { makeEntry, makeVehicle } from '@/test/factories'
+import { EMPTY_GUESS } from '@/domain/invoice/parseInvoice'
 import { EntryPage } from './EntryPage'
 
 const mocks = vi.hoisted(() => ({
@@ -67,4 +68,51 @@ test('the save button stays disabled while invoices upload', async () => {
   await user.click(screen.getByRole('button', { name: 'Enregistrer' }))
   expect(await screen.findByText('Envoi des factures…')).toBeInTheDocument()
   expect(screen.getByRole('button', { name: 'Enregistrer' })).toBeDisabled()
+})
+
+function renderScanned(file: File, garage: string | null) {
+  const state = { scan: { guess: { ...EMPTY_GUESS, garage }, file } }
+  render(
+    <MemoryRouter initialEntries={[{ pathname: '/voitures/v1/entrees/nouvelle', search: '?type=maintenance', state }]}>
+      <Routes>
+        <Route path="/voitures/:vehicleId/entrees/nouvelle" element={<EntryPage />} />
+        <Route path="/voitures/:vehicleId/journal" element={<p>Journal affiché</p>} />
+      </Routes>
+    </MemoryRouter>,
+  )
+  return userEvent.setup()
+}
+
+test('a scanned invoice is attached and the form asks to check the fields', async () => {
+  mocks.addDocument.mockResolvedValue(undefined)
+  const scan = new File(['%PDF'], 'facture-norauto.pdf', { type: 'application/pdf' })
+  const user = renderScanned(scan, 'Norauto')
+  expect(screen.getByText('Vérifiez les champs surlignés')).toBeInTheDocument()
+  expect(screen.getByText('facture-norauto.pdf')).toBeInTheDocument()
+  await user.click(screen.getByRole('button', { name: 'Enregistrer' }))
+  expect(mocks.addDocument).toHaveBeenCalledWith({ vehicleId: 'v1', entryId: 'e1', file: scan })
+})
+
+test('a scan that found nothing says so', () => {
+  renderScanned(new File(['x'], 'photo.jpg', { type: 'image/jpeg' }), null)
+  expect(screen.getByText('Aucune information lue, complétez le formulaire')).toBeInTheDocument()
+})
+
+test('without a scan (e.g. after a reload) the form is plain', () => {
+  renderNewFuel()
+  expect(screen.queryByText('Vérifiez les champs surlignés')).not.toBeInTheDocument()
+  expect(screen.queryByText('Aucune information lue, complétez le formulaire')).not.toBeInTheDocument()
+  expect(screen.queryByText('À vérifier')).not.toBeInTheDocument()
+})
+
+test('after a scan the guessed type can be changed, keeping the file and the guesses', async () => {
+  const scan = new File(['%PDF'], 'facture.pdf', { type: 'application/pdf' })
+  const user = renderScanned(scan, 'Norauto')
+  expect(screen.getByLabelText('Garage')).toHaveValue('Norauto')
+  await user.click(screen.getByRole('button', { name: 'Réparation' }))
+  expect(screen.getByText('Nouveau : réparation')).toBeInTheDocument()
+  expect(screen.getByLabelText('Garage')).toHaveValue('Norauto')
+  expect(screen.getByText('facture.pdf')).toBeInTheDocument()
+  await user.click(screen.getByRole('button', { name: 'Plein' }))
+  expect(screen.getByLabelText('Litres')).toBeInTheDocument()
 })
